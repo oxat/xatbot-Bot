@@ -7,7 +7,7 @@ $youtube = function (int $who, array $message, int $type) {
     if (!$bot->minrank($who, 'youtube')) {
         return $bot->network->sendMessageAutoDetection($who, $bot->botlang('not.enough.rank'), $type);
     }
-    
+
     if (empty($message[1]) || !isset($message[1])) {
         return $bot->network->sendMessageAutoDetection($who, 'Usage: !youtube [search]', $type, true);
     }
@@ -17,7 +17,7 @@ $youtube = function (int $who, array $message, int $type) {
     if (empty($key)) {
         return $bot->network->sendMessageAutoDetection($who, "Youtube API Key needs to be setup", $type);
     }
-    
+
     unset($message[0]);
     $message = implode(' ', $message);
 
@@ -28,7 +28,7 @@ $youtube = function (int $who, array $message, int $type) {
         ),
         true
     );
-    
+
     if (isset($response['error'])) {
         return $bot->network->sendMessageAutoDetection(
             $who,
@@ -45,8 +45,32 @@ $youtube = function (int $who, array $message, int $type) {
         );
     }
 
+    $count = 0;
     foreach ($response['items'] as $result) {
-        $newMessage = $result['snippet']['title'].' - http://youtube.com/watch?v='.$result['id']['videoId'];
+        if ($count >= 3) {
+            break;
+        }
+        $count++;
+
+        $videoId = $result['id']['videoId'];
+        $title = $result['snippet']['title'];
+
+        $videoInfo = json_decode(file_get_contents("https://www.googleapis.com/youtube/v3/videos?part=contentDetails%2Cstatistics&id={$videoId}&key={$key}"), true);
+
+        if (isset($videoInfo['items'][0]['contentDetails']['duration'])) {
+			preg_match_all('/(\d+)/', $videoInfo['items'][0]['contentDetails']['duration'], $matches);
+			$duration = sprintf('%02d:%02d', $matches[0][0], $matches[0][1]);
+		} else {
+			$duration = 'N/A';
+		}
+
+        if (isset($videoInfo['items'][0]['statistics']['viewCount'])) {
+            $views = number_format($videoInfo['items'][0]['statistics']['viewCount']);
+        } else {
+            $views = 'N/A';
+        }
+
+        $newMessage = "[{$duration}] {$title} - https://youtube.com/watch?v={$videoId} - {$views} views";
 
         if (sizeof($bot->packetsinqueue) > 0) {
             $bot->packetsinqueue[max(array_keys($bot->packetsinqueue)) + 1000] = [
