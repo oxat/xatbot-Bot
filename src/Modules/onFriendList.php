@@ -14,7 +14,7 @@ $onFriendList = function (array $array) {
 
     $bot  = xatbot\API\ActionAPI::getBot();
     $list = explode(',', $array['v']);
-    $list = array_diff($list, ['10101']);
+    $list = array_diff($list, [XatVariables::getXatid()]);
 
     if (sizeof($list) == 0) {
         return $bot->network->sendMessageAutoDetection(
