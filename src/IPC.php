@@ -2,6 +2,8 @@
 
 namespace xatbot;
 
+use Monolog\Handler\StreamHandler;
+
 class IPC
 {
     private static $socket;
@@ -19,7 +21,8 @@ class IPC
     
     public static function connect($fileName)
     {
-        $fileName = '/opt/xatbot-Bot/sockets/'.$fileName;
+        //$fileName = '/opt/xatbot-Bot/sockets/'.$fileName;
+        $fileName = new StreamHandler('sockets/' . $fileName);
 
         if (!file_exists($fileName)) {
             return false;
