@@ -1,6 +1,7 @@
 <?php
 
 use xatbot\Models\Log;
+use xatbot\Bot\XatVariables;
 
 $onTransfer = function (int $from, string $type, string $message, int $to, int $xats, int $days) {
 
@@ -15,14 +16,14 @@ $onTransfer = function (int $from, string $type, string $message, int $to, int $
 
     if (isset($bot->users[$from])) {
         $regname1 = $bot->users[$from]->getRegname();
-    } elseif ($from == 10101) {
-        $regname1 = 'Ocean';
+    } elseif ($from == XatVariables::getXatid()) {
+        $regname1 = XatVariables::getRegname();
     }
 
     if (isset($bot->users[$to])) {
         $regname2 = $bot->users[$to]->getRegname();
-    } elseif ($to == 10101) {
-        $regname2 = 'Ocean';
+    } elseif ($to == XatVariables::getXatid()) {
+        $regname2 = XatVariables::getRegname();
     }
 
     $log = new Log;
