@@ -266,7 +266,7 @@ class XatNetwork
 
         $j2['d0'] = $this->logininfo['d0'] ?? $this->logininfo['d0'];
 
-        for ($i = 2; $i <= 25; $i++) {
+        for ($i = 2; $i <= 30; $i++) {
             if (isset($this->logininfo['d' . $i])) {
                 $j2['d' . $i] = $this->logininfo['d' . $i];
             }
